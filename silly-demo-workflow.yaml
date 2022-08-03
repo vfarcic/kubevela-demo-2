@@ -1,0 +1,46 @@
+apiVersion: core.oam.dev/v1beta1
+kind: Application
+metadata:
+  name: silly-demo
+spec:
+  components:
+  - name: silly-demo
+    type: fancyapp
+    properties:
+      image: vfarcic/silly-demo:1.0.7
+    traits:
+    - type: fancyingress
+      properties:
+        host: test.silly-demo.127.0.0.1.nip.io
+  policies:
+  - name: staging
+    type: topology
+    properties:
+      clusters: ["local"]
+      namespace: staging
+  - name: production
+    type: topology
+    properties:
+      clusters: ["local"]
+      namespace: production
+  - name: production-host
+    type: override
+    properties:
+      components:
+      - type: fancyapp
+        traits:
+        - type: fancyingress
+          properties:
+            host: silly-demo.127.0.0.1.nip.io
+  workflow:
+    steps:
+    - name: to-staging
+      type: deploy
+      properties:
+        policies: ["staging"]
+    - name: approve
+      type: suspend
+    - name: to-prod
+      type: deploy
+      properties:
+        policies: ["production", "production-host"]

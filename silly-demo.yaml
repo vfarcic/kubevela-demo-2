@@ -1,0 +1,10 @@
+apiVersion: core.oam.dev/v1beta1
+kind: Application
+metadata:
+  name: silly-demo
+spec:
+  components:
+  - name: silly-demo
+    type: fancyapp
+    properties:
+      image: vfarcic/silly-demo:1.0.7
