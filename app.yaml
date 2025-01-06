@@ -12,8 +12,6 @@ spec:
       port: 8080
       host: silly-demo.127.0.0.1.nip.io
       ingressClassName: nginx
-      # db:
-      #   secret: silly-demo-db
     traits:
     - type: scaler
       properties:
@@ -44,6 +42,14 @@ spec:
             - type: scaler
               properties:
                 min: 1
+  - name: db-prod
+    type: override
+    properties:
+      components:
+        - type: app-backend
+          properties:
+            db:
+              secret: silly-demo-db
   workflow:
     steps:
     - name: deploy-to-dev
@@ -52,8 +58,7 @@ spec:
         policies: [target-dev, host-dev, scaler-dev]
     - name: promotion
       type: suspend
-      timeout: 60s
     - name: deploy-to-prod
       type: deploy
       properties:
-        policies: [target-prod]
+        policies: [target-prod, db-prod]

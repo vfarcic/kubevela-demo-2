@@ -170,16 +170,61 @@ template: {
             }
         }
         secret: {
-            apiVersion: "v1"
-            kind: "Secret"
+            apiVersion: "kubernetes.crossplane.io/v1alpha2"
+            kind: "Object"
             metadata: #Metadata
-            data: {
-                username: base64.Encode(null, output.spec.forProvider.username)
-                // password: output.spec.forProvider.username
-                // endpoint: base64.Encode(null, output.status.atProvider.address)
-                port: "NTQzMg=="
+            spec: {
+                references:  [{
+                    patchesFrom: {
+                        apiVersion: "rds.aws.upbound.io/v1beta1"
+                        kind:       "Instance"
+                        name:       context.name + "-" + context.namespace
+                        namespace:  "crossplane-system"
+                        fieldPath:  "spec.forProvider.username"
+                    }
+                    toFieldPath: "stringData.username"
+                }, {
+                    patchesFrom: {
+                        apiVersion: "v1"
+                        kind:       "Secret"
+                        name:       context.name + "-password"
+                        namespace:  context.namespace
+                        fieldPath:  "data.password"
+                    }
+                    toFieldPath: "data.password"
+                }, {
+                    patchesFrom: {
+                        apiVersion: "rds.aws.upbound.io/v1beta1"
+                        kind:       "Instance"
+                        name:       context.name + "-" + context.namespace
+                        namespace:  "crossplane-system"
+                        fieldPath:  "status.atProvider.address"
+                    }
+                    toFieldPath: "stringData.endpoint"
+                }]
+                forProvider: manifest: {
+                    apiVersion: "v1"
+                    kind:       "Secret"
+                    metadata: {
+                        name:      context.name
+                        namespace: context.namespace
+                    }
+                    data: port: "NTQzMg=="
+                }
+                // providerConfigRef: name: oxr.spec.id + "-sql"
             }
         }
+        // secret: {
+        //     apiVersion: "v1"
+        //     kind: "Secret"
+        //     metadata: #Metadata
+        //     data: {
+        //         username: base64.Encode(null, output.spec.forProvider.username)
+        //         // password: output.spec.forProvider.username
+        //         // endpoint: base64.Encode(null, output.status.atProvider.address)
+        //         port: "NTQzMg=="
+        //     }
+        // }
         //       spec: {
         //           references: [{
         //               patchesFrom: {

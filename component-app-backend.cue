@@ -11,12 +11,13 @@
 
 template: {
     parameter: {
-        image:            string
-        tag:              string
-        port:             *80 | int
-        host:             *"devopstoolkit.live" | string
-        ingressClassName: string
-        db: secret:       string
+        image:               string
+        tag:                 string
+        port:                *80 | int
+        host:                *"devopstoolkit.live" | string
+        ingressClassName:    string
+        db: secret:          string
+        db: secretNamespace: string
     }
     output: {
         apiVersion: "apps/v1"

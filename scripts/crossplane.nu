@@ -182,7 +182,6 @@ aws_secret_access_key = ($env.AWS_SECRET_ACCESS_KEY)
                 spec: {
                     policyName: "dot-app"
                     validationActions: ["Deny"]
-                    # matchResources: { namespaceSelector: { matchLabels: { "kubernetes.io/metadata.name": a-team } } }
                 }
             } | to yaml | kubectl apply --filename -
 
@@ -310,6 +309,13 @@ Press any key to continue.
             package: "xpkg.upbound.io/crossplane-contrib/provider-kubernetes:v0.15.0"
             controllerConfigRef: { name: "crossplane-provider-kubernetes" }
         }
+    } | to yaml | kubectl apply --filename -
+
+    {
+        apiVersion: "kubernetes.crossplane.io/v1alpha1"
+        kind: "ProviderConfig"
+        metadata: { name: "default" }
+        spec: { credentials: { source: "InjectedIdentity" } }
     } | to yaml | kubectl apply --filename -
 
     wait crossplane
