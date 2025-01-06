@@ -1,0 +1,59 @@
+apiVersion: core.oam.dev/v1beta1
+kind: Application
+metadata:
+  name: silly-demo
+spec:
+  components:
+  - name: silly-demo
+    type: app-backend
+    properties:
+      image: ghcr.io/vfarcic/silly-demo
+      tag: 1.4.343
+      port: 8080
+      host: silly-demo.127.0.0.1.nip.io
+      ingressClassName: nginx
+      # db:
+      #   secret: silly-demo-db
+    traits:
+    - type: scaler
+      properties:
+        min: 2
+        max: 5
+  policies:
+  - name: target-dev
+    type: topology
+    properties:
+      namespace: dev
+  - name: host-dev
+    type: override
+    properties:
+      components:
+      - type: app-backend
+        properties:
+          host: dev.silly-demo.127.0.0.1.nip.io
+  - name: target-prod
+    type: topology
+    properties:
+      namespace: prod
+  - name: scaler-dev
+    type: override
+    properties:
+      components:
+        - type: app-backend
+          traits:
+            - type: scaler
+              properties:
+                min: 1
+  workflow:
+    steps:
+    - name: deploy-to-dev
+      type: deploy
+      properties:
+        policies: [target-dev, host-dev, scaler-dev]
+    - name: promotion
+      type: suspend
+      timeout: 60s
+    - name: deploy-to-prod
+      type: deploy
+      properties:
+        policies: [target-prod]
