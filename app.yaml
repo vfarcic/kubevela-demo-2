@@ -37,28 +37,33 @@ spec:
     type: override
     properties:
       components:
-        - type: app-backend
-          traits:
-            - type: scaler
-              properties:
-                min: 1
+      - type: app-backend
+        traits:
+        - type: scaler
+          properties:
+            min: 1
   - name: db-prod
     type: override
     properties:
       components:
-        - type: app-backend
-          properties:
-            db:
-              secret: silly-demo-db
+      - type: app-backend
+        properties:
+          db:
+            secret: silly-demo-db
   workflow:
     steps:
     - name: deploy-to-dev
       type: deploy
       properties:
-        policies: [target-dev, host-dev, scaler-dev]
+        policies:
+        - target-dev
+        - host-dev
+        - scaler-dev
     - name: promotion
       type: suspend
     - name: deploy-to-prod
       type: deploy
       properties:
-        policies: [target-prod, db-prod]
+        policies:
+        - target-prod
+        - db-prod

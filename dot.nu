@@ -21,6 +21,30 @@ def "main setup" [] {
 
     main apply crossplane --hyperscaler $hyperscaler --db true
 
+    if $hyperscaler == "azure" {
+
+        let date_suffix = (date now | format date "%Y%m%d%H%M%S")
+
+        open db-azure.yaml |
+            | upsert spec.components.0.name $"silly-demo-db-($date_suffix)"
+            | save db-azure.yaml --force
+
+        open db-azure-password.yaml |
+            | upsert metadata.name $"silly-demo-db-($date_suffix)-password"
+            | save db-azure-password.yaml --force
+
+        open app.yaml |
+            | upsert spec.policies.4.properties.components.0.properties.db.secret $"silly-demo-db-($date_suffix)"
+            | save app.yaml --force
+
+    } else {
+
+        open app.yaml |
+            | upsert spec.policies.4.properties.components.0.properties.db.secret "silly-demo-db"
+            | save app.yaml --force
+
+    }
+
     vela install
 
     (
@@ -35,7 +59,15 @@ def "main setup" [] {
 
 }
 
-def "main destroy" [] {
+def "main destroy" [
+    hyperscaler: string
+] {
+
+    if $hyperscaler == "google" {
+
+        gcloud projects delete $env.PROJECT_ID --quiet
+
+    }
 
     main destroy kubernetes kind
 

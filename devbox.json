@@ -9,7 +9,9 @@
     "yq-go@4.44.6",
     "teller@2.0.7",
     "kubernetes-helm@3.16.4",
-    "viddy@1.3.0"
+    "viddy@1.3.0",
+    "azure-cli@2.67.0",
+    "path:gcloud#google-cloud-sdk"
   ],
   "shell": {
     "init_hook": [],

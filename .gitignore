@@ -1,3 +1,6 @@
 /.env
 /aws-creds.conf
 /kubeconfig*.yaml
+/gcp-creds.json
+/azure-creds.json
+/devbox.lock
