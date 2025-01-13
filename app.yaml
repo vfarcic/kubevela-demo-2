@@ -49,7 +49,7 @@ spec:
       - type: app-backend
         properties:
           db:
-            secret: silly-demo-db
+            secret: silly-demo-db-20250113165136
   workflow:
     steps:
     - name: deploy-to-dev

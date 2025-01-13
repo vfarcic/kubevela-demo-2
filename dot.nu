@@ -4,6 +4,7 @@ source scripts/kubernetes.nu
 source scripts/ingress.nu
 source scripts/crossplane.nu
 source scripts/common.nu
+source scripts/kubevela.nu
 
 def main [] {}
 
@@ -45,15 +46,7 @@ def "main setup" [] {
 
     }
 
-    vela install
-
-    (
-        vela addon enable velaux
-            domain=$"vela.($ingress_data.host)"
-            gatewayDriver=nginx
-    )
-
-    start $"http://vela.($ingress_data.host)"
+    main apply kubevela $"vela.($ingress_data.host)"
 
     main print source
 
