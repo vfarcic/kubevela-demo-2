@@ -6,8 +6,6 @@ def "main apply kubevela" [
 
     vela install
 
-    sleep 5sec
-
     (
         vela addon enable velaux
             $"domain=($host)"
